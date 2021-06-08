@@ -1,0 +1,31 @@
+{
+  "name": "parentsalarm-alert",
+  "version": "1.0.0",
+  "description": "Send alerts for parentsalarm updates",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/varunkumar/parentsalarm-alert.git"
+  },
+  "type": "module",
+  "keywords": [
+    "education",
+    "parentsalarm",
+    "edutech",
+    "notification",
+    "alert"
+  ],
+  "author": "Varunkumar Nagarajan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/varunkumar/parentsalarm-alert/issues"
+  },
+  "homepage": "https://github.com/varunkumar/parentsalarm-alert#readme",
+  "dependencies": {
+    "puppeteer": "^10.0.0"
+  }
+}

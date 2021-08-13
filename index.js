@@ -1,37 +1,30 @@
 import puppeteer from 'puppeteer';
-import { PASSWORD, USER_NAME } from './creds.js';
-import { sleep } from './utils.js';
-
-const login = async (page) => {
-  const USER_NAME_SELECTOR = '#LoginId';
-  const PASSWORD_SELECTOR = '#LoginPassword';
-  const SUBMIT_SELECTOR = '#btnSignIn';
-
-  await page.click(USER_NAME_SELECTOR);
-  await page.keyboard.type(USER_NAME);
-
-  await page.click(PASSWORD_SELECTOR);
-  await page.keyboard.type(PASSWORD);
-
-  await page.click(SUBMIT_SELECTOR);
-
-  await page.waitForNavigation();
-};
-
-const logout = async (page) => {
-  await page.goto('https://www.parentsalarm.com/About/LogOut');
-};
+import { NoticeBoardExtractor } from './content-extractors/notice-board-extractor.js';
+import { login, logout, sleep } from './utils.js';
 
 const run = async () => {
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
   });
-  const page = await browser.newPage();
-  await page.goto('https://www.parentsalarm.com/', {
-    waitUntil: 'domcontentloaded',
-  });
+  const page = await login(browser);
 
-  await login(page);
+  const extractors = [new NoticeBoardExtractor(page)];
+
+  await Promise.all(extractors.map((extractor) => extractor.reset()));
+
+  let newItems = await Promise.all(
+    extractors.map((extractor) => extractor.extractNew())
+  );
+  // console.log(newItems);
+
+  extractors.forEach(async (extractor) =>
+    console.log(await extractor.getWatermark())
+  );
+
+  newItems = await Promise.all(
+    extractors.map((extractor) => extractor.extractNew())
+  );
+  console.log(newItems);
 
   await sleep(1000);
 

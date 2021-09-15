@@ -1,4 +1,5 @@
 import puppeteer from 'puppeteer';
+import { EContentExtractor } from './content-extractors/e-content-extractor.js';
 import { NoticeBoardExtractor } from './content-extractors/notice-board-extractor.js';
 import { login, logout, sleep } from './utils.js';
 
@@ -8,23 +9,17 @@ const run = async () => {
   });
   const page = await login(browser);
 
-  const extractors = [new NoticeBoardExtractor(page)];
-
-  await Promise.all(extractors.map((extractor) => extractor.reset()));
+  const extractors = [
+    await new NoticeBoardExtractor(browser),
+    await new EContentExtractor(browser),
+  ];
 
   let newItems = await Promise.all(
     extractors.map((extractor) => extractor.extractNew())
   );
-  // console.log(newItems);
-
-  extractors.forEach(async (extractor) =>
-    console.log(await extractor.getWatermark())
-  );
-
-  newItems = await Promise.all(
-    extractors.map((extractor) => extractor.extractNew())
-  );
-  console.log(newItems);
+  for (const items in newItems) {
+    console.log(newItems[items].length);
+  }
 
   await sleep(1000);
 

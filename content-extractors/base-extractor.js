@@ -1,23 +1,28 @@
 const instances = {};
 
 export class BaseExtractor {
-  constructor(page) {
+  constructor(browser) {
     const name = this.constructor.name;
-    if (instances[name] !== undefined) {
-      return instances[name];
-    }
-    this.page = page;
-    this.watermarkKey = name;
-    Object.freeze(this);
-    instances[name] = this;
+    return (async () => {
+      if (instances[name] !== undefined) {
+        return instances[name];
+      }
+      this.page = await browser.newPage();
+      this.watermarkKey = name;
+      Object.freeze(this);
+      instances[name] = this;
+      return this;
+    })();
   }
 
   // Extracts posts since the last watermark. It updates the watermark with the latest post.
   async extractNew() {
     const posts = await this.extractAll();
+    console.debug(`${this.watermarkKey}: ${posts.length}`);
 
     // Filter posts after the watermark
     const watermark = await this.getWatermark();
+    console.debug(`${this.watermarkKey}: ${watermark}`);
     const filteredPosts = posts.filter((post) => {
       return new Date(post.date) > new Date(watermark);
     });
@@ -41,14 +46,6 @@ export class BaseExtractor {
   async getWatermark() {
     return await this.page.evaluate(
       (watermarkKey) => localStorage.getItem(watermarkKey),
-      this.watermarkKey
-    );
-  }
-
-  // Reset watermark.
-  async reset() {
-    return await this.page.evaluate(
-      (watermarkKey) => localStorage.removeItem(watermarkKey),
       this.watermarkKey
     );
   }

@@ -1,18 +1,24 @@
 import { BASE_URL } from '../utils.js';
 import { BaseExtractor } from './base-extractor.js';
 
-const DATE_SELECTOR = 'section.bn p span[style="float:right"]';
-const TITLE_SELECTOR = 'section.bn b';
+const SUBMIT_SELECTOR = '.as-btn.cancel';
+const DATE_SELECTOR = '.ec-tab-topic1';
+const TITLE_SELECTOR = '.ec-tab-topic';
 
-export class NoticeBoardExtractor extends BaseExtractor {
+export class EContentExtractor extends BaseExtractor {
   constructor(browser) {
     super(browser);
   }
 
   async extractAll() {
-    await this.page.goto(`${BASE_URL}/User/Student/NoticeBoard`, {
+    await this.page.goto(`${BASE_URL}/User/Student/ViewEcontent`, {
       waitUntil: 'domcontentloaded',
     });
+
+    await Promise.all([
+      this.page.click(SUBMIT_SELECTOR),
+      this.page.waitForNavigation({ waitUntil: 'networkidle2' }),
+    ]);
 
     const dates = await this.page.$$eval(DATE_SELECTOR, (elements) =>
       elements.map((e) => e.textContent)
@@ -25,9 +31,11 @@ export class NoticeBoardExtractor extends BaseExtractor {
     // Concat items from date and title at the same index
     const posts = dates.map((dateStr, index) => {
       let date = dateStr
-        .replace(/\s+/g, ' ')
-        .trim()
-        .replace('Posted On : ', '');
+        .replace(
+          'Uploaded by Greenfield Chennai International School  |  Total Like - 25  |  Created on ',
+          ' '
+        )
+        .trim();
 
       date = new Date(date);
 

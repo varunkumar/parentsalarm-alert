@@ -1,5 +1,6 @@
 import puppeteer from 'puppeteer';
 import { EContentExtractor } from './content-extractors/e-content-extractor.js';
+import { HomeWorkExtractor } from './content-extractors/home-work-extractor.js';
 import { NoticeBoardExtractor } from './content-extractors/notice-board-extractor.js';
 import { login, logout, sleep } from './utils.js';
 
@@ -10,8 +11,9 @@ const run = async () => {
   const page = await login(browser);
 
   const extractors = [
-    await new NoticeBoardExtractor(browser),
     await new EContentExtractor(browser),
+    await new HomeWorkExtractor(browser),
+    await new NoticeBoardExtractor(browser),
   ];
 
   let newItems = await Promise.all(

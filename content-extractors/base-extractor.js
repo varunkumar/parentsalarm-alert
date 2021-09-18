@@ -17,25 +17,36 @@ export class BaseExtractor {
 
   // Extracts posts since the last watermark. It updates the watermark with the latest post.
   async extractNew() {
+    console.log(`[${this.watermarkKey}] Extracting items...`)
     const posts = await this.extractAll();
-    console.debug(`${this.watermarkKey}: ${posts.length}`);
+    console.log(`[${this.watermarkKey}] Extracted ${posts.length} items.`)
 
     // Filter posts after the watermark
     const watermark = await this.getWatermark();
-    console.debug(`${this.watermarkKey}: ${watermark}`);
+    if (watermark) {
+      console.log(`[${this.watermarkKey}] Filtering items after ${watermark}...`)
+    } else {
+      console.log(`[${this.watermarkKey}] Watermark is empty. First time extraction.`)
+    }
+
     const filteredPosts = posts.filter((post) => {
       return new Date(post.date) > new Date(watermark);
     });
 
     // Update watermark
     if (filteredPosts.length > 0) {
+      const newWatermark = filteredPosts[0].date;
       await updateWatermark(
         this.page,
         this.watermarkKey,
-        filteredPosts[0].date
+        newWatermark
       );
+      console.log(`[${this.watermarkKey}] Updating watermark to ${newWatermark}...`)
     }
 
+    if (watermark) {
+      console.log(`[${this.watermarkKey}] Found ${filteredPosts.length} new items since ${watermark}...`)
+    }
     return filteredPosts;
   }
 

@@ -7,12 +7,15 @@ export default class BaseExtractor {
   constructor(browser) {
     const { name } = this.constructor;
     return (async () => {
+      // eslint-disable-next-line security/detect-object-injection
       if (instances[name] !== undefined) {
+        // eslint-disable-next-line security/detect-object-injection
         return instances[name];
       }
       this.page = await browser.newPage();
       this.watermarkKey = name;
       Object.freeze(this);
+      // eslint-disable-next-line security/detect-object-injection
       instances[name] = this;
       return this;
     })();

@@ -35,7 +35,7 @@ export default class EContentExtractor extends BaseExtractor {
 
       date = new Date(date);
 
-      const title = titles[index].replace(/\s+/g, ' ').trim();
+      const title = titles.at(index).replace(/\s+/g, ' ').trim();
 
       return {
         date,

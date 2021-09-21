@@ -1,8 +1,11 @@
 const instances = {};
 
-export class BaseExtractor {
+// eslint-disable-next-line no-unused-vars
+const updateWatermark = async (page, watermarkKey, watermark) => {};
+
+export default class BaseExtractor {
   constructor(browser) {
-    const name = this.constructor.name;
+    const { name } = this.constructor;
     return (async () => {
       if (instances[name] !== undefined) {
         return instances[name];
@@ -17,57 +20,48 @@ export class BaseExtractor {
 
   // Extracts posts since the last watermark. It updates the watermark with the latest post.
   async extractNew() {
-    console.log(`[${this.watermarkKey}] Extracting items...`)
+    console.log(`[${this.watermarkKey}] Extracting items...`);
     const posts = await this.extractAll();
-    console.log(`[${this.watermarkKey}] Extracted ${posts.length} items.`)
+    console.log(`[${this.watermarkKey}] Extracted ${posts.length} items.`);
 
     // Filter posts after the watermark
     const watermark = await this.getWatermark();
     if (watermark) {
-      console.log(`[${this.watermarkKey}] Filtering items after ${watermark}...`)
+      console.log(
+        `[${this.watermarkKey}] Filtering items after ${watermark}...`
+      );
     } else {
-      console.log(`[${this.watermarkKey}] Watermark is empty. First time extraction.`)
+      console.log(
+        `[${this.watermarkKey}] Watermark is empty. First time extraction.`
+      );
     }
 
-    const filteredPosts = posts.filter((post) => {
-      return new Date(post.date) > new Date(watermark);
-    });
+    const filteredPosts = posts.filter(
+      (post) => new Date(post.date) > new Date(watermark)
+    );
 
     // Update watermark
     if (filteredPosts.length > 0) {
       const newWatermark = filteredPosts[0].date;
-      await updateWatermark(
-        this.page,
-        this.watermarkKey,
-        newWatermark
+      await updateWatermark(this.page, this.watermarkKey, newWatermark);
+      console.log(
+        `[${this.watermarkKey}] Updating watermark to ${newWatermark}...`
       );
-      console.log(`[${this.watermarkKey}] Updating watermark to ${newWatermark}...`)
     }
 
     if (watermark) {
-      console.log(`[${this.watermarkKey}] Found ${filteredPosts.length} new items since ${watermark}...`)
+      console.log(
+        `[${this.watermarkKey}] Found ${filteredPosts.length} new items since ${watermark}...`
+      );
     }
     return filteredPosts;
   }
 
   // Extracts all posts.
+  // eslint-disable-next-line no-empty-function, class-methods-use-this
   async extractAll() {}
 
   // Get current watermark.
-  async getWatermark() {
-    return await this.page.evaluate(
-      (watermarkKey) => localStorage.getItem(watermarkKey),
-      this.watermarkKey
-    );
-  }
+  // eslint-disable-next-line no-empty-function, class-methods-use-this
+  async getWatermark() {}
 }
-
-const updateWatermark = async (page, watermarkKey, watermark) => {
-  await page.evaluate(
-    (watermarkKey, watermark) => {
-      localStorage.setItem(watermarkKey, watermark);
-    },
-    watermarkKey,
-    watermark
-  );
-};

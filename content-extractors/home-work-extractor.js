@@ -1,14 +1,10 @@
 import { BASE_URL } from '../utils.js';
-import { BaseExtractor } from './base-extractor.js';
+import BaseExtractor from './base-extractor.js';
 
 const DATE_SELECTOR = '.table-row:not([title])';
 const TITLE_SELECTOR = '.table-row[title]';
 
-export class HomeWorkExtractor extends BaseExtractor {
-  constructor(browser) {
-    super(browser);
-  }
-
+export default class HomeWorkExtractor extends BaseExtractor {
   async extractAll() {
     await this.page.goto(`${BASE_URL}/User/Student/HomeWork`, {
       waitUntil: 'domcontentloaded',

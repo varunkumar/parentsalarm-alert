@@ -1,15 +1,23 @@
 import { BASE_URL } from '../utils.js';
-import { BaseExtractor } from './base-extractor.js';
+import BaseExtractor from './base-extractor.js';
 
 const START_DATE_SELECTOR = '#valSentSmsDetails_StartDate';
 const SUBMIT_SELECTOR = '#btnGetData';
 const DATA_SELECTOR = '.fc-table tbody tr';
 
-export class SMSExtractor extends BaseExtractor {
-  constructor(browser) {
-    super(browser);
-  }
+const PERIOD_RANGE = 30;
 
+// Get start date in mm/dd/yyyy format
+const getStartDate = () => {
+  const date = new Date();
+  date.setDate(date.getDate() - PERIOD_RANGE);
+  return date.toLocaleDateString('en-US', {
+    month: '2-digit',
+    day: '2-digit',
+    year: 'numeric',
+  });
+};
+export default class SMSExtractor extends BaseExtractor {
   async extractAll() {
     await this.page.goto(`${BASE_URL}/User/Student/ReceivedSms`, {
       waitUntil: 'domcontentloaded',
@@ -42,21 +50,8 @@ export class SMSExtractor extends BaseExtractor {
 
     posts = posts.map((post) => ({
       title: post.title,
-      date: new Date(post.date)
+      date: new Date(post.date),
     }));
     return posts;
   }
 }
-
-const PERIOD_RANGE = 30;
-
-// Get start date in mm/dd/yyyy format
-const getStartDate = () => {
-  const date = new Date();
-  date.setDate(date.getDate() - PERIOD_RANGE);
-  return date.toLocaleDateString('en-US', {
-    month: '2-digit',
-    day: '2-digit',
-    year: 'numeric',
-  });
-};

@@ -1,14 +1,10 @@
 import { BASE_URL } from '../utils.js';
-import { BaseExtractor } from './base-extractor.js';
+import BaseExtractor from './base-extractor.js';
 
 const DATE_SELECTOR = 'section.bn p span[style="float:right"]';
 const TITLE_SELECTOR = 'section.bn b';
 
-export class NoticeBoardExtractor extends BaseExtractor {
-  constructor(browser) {
-    super(browser);
-  }
-
+export default class NoticeBoardExtractor extends BaseExtractor {
   async extractAll() {
     await this.page.goto(`${BASE_URL}/User/Student/NoticeBoard`, {
       waitUntil: 'domcontentloaded',

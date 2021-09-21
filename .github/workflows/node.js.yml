@@ -20,13 +20,13 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: du5rte/create-secrets-file@v1
+    - uses: actions/checkout@v2
     - name: Create Secrets File Action
+      uses: du5rte/create-secrets-file@v1
       with:
         secrets: |
           USER_NAME=${{ secrets.USER_NAME }}
           PASSWORD=${{ secrets.PASSWORD }}
-    - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:

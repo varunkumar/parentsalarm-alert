@@ -1,4 +1,4 @@
-import { PASSWORD, USER_NAME } from './creds.js';
+import 'secrets';
 
 export const BASE_URL = 'https://www.parentsalarm.com';
 
@@ -17,10 +17,10 @@ export const login = async (browser) => {
   const SUBMIT_SELECTOR = '#btnSignIn';
 
   await page.click(USER_NAME_SELECTOR);
-  await page.keyboard.type(USER_NAME);
+  await page.keyboard.type(process.env.USER_NAME);
 
   await page.click(PASSWORD_SELECTOR);
-  await page.keyboard.type(PASSWORD);
+  await page.keyboard.type(process.env.PASSWORD);
 
   await page.click(SUBMIT_SELECTOR);
 

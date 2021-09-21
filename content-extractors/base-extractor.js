@@ -1,7 +1,6 @@
-const instances = {};
+import fetch from 'node-fetch';
 
-// eslint-disable-next-line no-unused-vars
-const updateWatermark = async (page, watermarkKey, watermark) => {};
+const instances = {};
 
 export default class BaseExtractor {
   constructor(browser) {
@@ -29,9 +28,16 @@ export default class BaseExtractor {
 
     // Filter posts after the watermark
     const watermark = await this.getWatermark();
+    let filteredPosts = posts;
     if (watermark) {
       console.log(
         `[${this.watermarkKey}] Filtering items after ${watermark}...`
+      );
+      filteredPosts = posts.filter(
+        (post) => new Date(post.date) > new Date(watermark)
+      );
+      console.log(
+        `[${this.watermarkKey}] Found ${filteredPosts.length} new items since ${watermark}...`
       );
     } else {
       console.log(
@@ -39,24 +45,17 @@ export default class BaseExtractor {
       );
     }
 
-    const filteredPosts = posts.filter(
-      (post) => new Date(post.date) > new Date(watermark)
-    );
-
     // Update watermark
     if (filteredPosts.length > 0) {
       const newWatermark = filteredPosts[0].date;
-      await updateWatermark(this.page, this.watermarkKey, newWatermark);
       console.log(
-        `[${this.watermarkKey}] Updating watermark to ${newWatermark}...`
+        `[${
+          this.watermarkKey
+        }] Updating watermark to ${newWatermark.toJSON()}...`
       );
+      await this.updateWatermark(newWatermark);
     }
 
-    if (watermark) {
-      console.log(
-        `[${this.watermarkKey}] Found ${filteredPosts.length} new items since ${watermark}...`
-      );
-    }
     return filteredPosts;
   }
 
@@ -65,8 +64,58 @@ export default class BaseExtractor {
   async extractAll() {}
 
   // Get current watermark.
-  // eslint-disable-next-line no-empty-function, class-methods-use-this
   async getWatermark() {
-    return null;
+    const response = await fetch(
+      `https://persistent.aaim.io/api/values/get?key=${this.watermarkKey}`,
+      {
+        method: 'GET',
+        headers: {
+          'x-api-key': process.env.PERSISTENT_VALUE_ACCESS_TOKEN || '',
+        },
+      }
+    );
+    if (response.status !== 200) {
+      throw new Error(`[${this.watermarkKey}] Failed to get watermark.`);
+    }
+    const watermark = await response.json();
+    return watermark.data;
+  }
+
+  // Update watermark
+  async updateWatermark(watermark) {
+    const response = await fetch(
+      `https://persistent.aaim.io/api/values/set?key=${this.watermarkKey}`,
+      {
+        method: 'POST',
+        headers: {
+          'x-api-key': process.env.PERSISTENT_VALUE_ACCESS_TOKEN,
+          'Content-Type': 'application/json',
+        },
+        body: `{"value":"${watermark.toJSON()}"}`,
+      }
+    );
+    if (response.status !== 200) {
+      throw new Error(`[${this.watermarkKey}] Failed to update watermark.`);
+    }
+  }
+
+  // Reset watermark
+  async resetWatermark() {
+    const response = await fetch(
+      `https://persistent.aaim.io/api/values/set?key=${this.watermarkKey}`,
+      {
+        method: 'POST',
+        headers: {
+          'x-api-key': process.env.PERSISTENT_VALUE_ACCESS_TOKEN,
+          'Content-Type': 'application/json',
+        },
+        body: `{"value":"2015-11-07T08:48:00.000Z"}`,
+      }
+    );
+    if (response.status !== 200) {
+      throw new Error(
+        `[${this.watermarkKey}] Failed to reset watermark. ${response.statusText}`
+      );
+    }
   }
 }

@@ -63,5 +63,7 @@ export default class BaseExtractor {
 
   // Get current watermark.
   // eslint-disable-next-line no-empty-function, class-methods-use-this
-  async getWatermark() {}
+  async getWatermark() {
+    return null;
+  }
 }

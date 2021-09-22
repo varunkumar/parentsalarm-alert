@@ -2,3 +2,6 @@
 ☐ Tests
 ☐ Use logger
 ☐ Add snapshotting for extractors
+✔ Retry failed extractors @done(21-09-22 09:27)
+☐ Slack integration
+☐ Separate the watermark updation flow

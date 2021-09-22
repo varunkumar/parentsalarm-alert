@@ -10,6 +10,7 @@ export const login = async (browser) => {
   const page = await browser.newPage();
   await page.goto(BASE_URL, {
     waitUntil: 'domcontentloaded',
+    timeout: 0,
   });
 
   const USER_NAME_SELECTOR = '#LoginId';

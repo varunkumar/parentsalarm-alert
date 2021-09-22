@@ -10,6 +10,7 @@ export const login = async (browser) => {
   const page = await browser.newPage();
   await page.goto(BASE_URL, {
     waitUntil: 'networkidle2',
+    networkIdleTimeout: 500000,
     timeout: 0,
   });
 

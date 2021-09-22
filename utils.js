@@ -9,7 +9,7 @@ export const sleep = async (ms) => {
 export const login = async (browser) => {
   const page = await browser.newPage();
   await page.goto(BASE_URL, {
-    waitUntil: 'domcontentloaded',
+    waitUntil: 'networkidle2',
     timeout: 0,
   });
 

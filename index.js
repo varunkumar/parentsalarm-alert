@@ -22,7 +22,7 @@ const run = async () => {
     extractors.map((extractor) => extractor.extractNew())
   );
   newItems.forEach((item) => {
-    console.log(item.length);
+    console.log(item);
   });
 
   await sleep(1000);

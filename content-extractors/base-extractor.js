@@ -1,5 +1,8 @@
+import Log4js from 'log4js';
 import fetch from 'node-fetch';
 import sendMessage from '../slack.js';
+
+const logger = Log4js.getLogger('base-extractor');
 
 const instances = {};
 const ICON_MAP = {
@@ -43,6 +46,7 @@ export default class BaseExtractor {
       }
       this.page = await browser.newPage();
       this.watermarkKey = name;
+      this.logger = Log4js.getLogger(name);
       Object.freeze(this);
       // eslint-disable-next-line security/detect-object-injection
       instances[name] = this;
@@ -52,49 +56,39 @@ export default class BaseExtractor {
 
   // Extracts posts since the last watermark. It updates the watermark with the latest post.
   async extractNew(publish = false) {
-    console.log(`[${this.watermarkKey}] Extracting items...`);
+    this.logger.info(`Extracting items...`);
     const posts = await this.extractAll();
-    console.log(`[${this.watermarkKey}] Extracted ${posts.length} items.`);
+    this.logger.info(`Extracted ${posts.length} items.`);
 
     // Filter posts after the watermark
     const watermark = await this.getWatermark();
     let filteredPosts = posts;
     if (watermark) {
-      console.log(
-        `[${this.watermarkKey}] Filtering items after ${watermark}...`
-      );
+      this.logger.info(`Filtering items after ${watermark}...`);
       filteredPosts = posts.filter(
         (post) => new Date(post.date) > new Date(watermark)
       );
-      console.log(
-        `[${this.watermarkKey}] Found ${filteredPosts.length} new items since ${watermark}...`
+      this.logger.info(
+        `Found ${filteredPosts.length} new items since ${watermark}...`
       );
     } else {
-      console.log(
-        `[${this.watermarkKey}] Watermark is empty. First time extraction.`
-      );
+      this.logger.info(`Watermark is empty. First time extraction.`);
     }
 
     if (publish) {
-      console.log(`[${this.watermarkKey}] Publishing items...`);
       if (filteredPosts.length > 0) {
+        this.logger.info(`Publishing items...`);
         await sendMessage(formatPosts(this.watermarkKey, filteredPosts));
-        console.log(
-          `[${this.watermarkKey}] Published ${filteredPosts.length} items.`
-        );
+        this.logger.info(`Published ${filteredPosts.length} items.`);
       } else {
-        console.log(`[${this.watermarkKey}] No new items to publish.`);
+        this.logger.info(`No new items to publish.`);
       }
     }
 
     // Update watermark
     if (filteredPosts.length > 0) {
       const newWatermark = filteredPosts[0].date;
-      console.log(
-        `[${
-          this.watermarkKey
-        }] Updating watermark to ${newWatermark.toJSON()}...`
-      );
+      this.logger.info(`Updating watermark to ${newWatermark.toJSON()}...`);
       await this.updateWatermark(newWatermark);
     }
 

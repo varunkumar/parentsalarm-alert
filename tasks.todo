@@ -1,7 +1,8 @@
 ✔ ESlint @done(21-06-08 23:20)
 ☐ Tests
-☐ Use logger
+✔ Use logger @done(21-10-04 21:21)
 ☐ Add snapshotting for extractors
 ✔ Retry failed extractors @done(21-09-22 09:27)
 ✔ Slack integration @done(21-10-04 12:23)
 ✔ Separate the watermark updation flow @done(21-10-04 12:23)
+☐ Fix same day items issue

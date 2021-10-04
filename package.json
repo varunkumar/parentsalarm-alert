@@ -29,6 +29,7 @@
   "homepage": "https://github.com/varunkumar/parentsalarm-alert#readme",
   "dependencies": {
     "@slack/web-api": "^6.4.0",
+    "log4js": "^6.3.0",
     "node-fetch": "^3.0.0",
     "puppeteer": "^10.4.0",
     "secrets": "^1.1.5"

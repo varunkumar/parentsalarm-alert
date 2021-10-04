@@ -4,7 +4,7 @@
   "description": "Send alerts for parentsalarm updates",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "TZ='Asia/Kolkata' node index.js",
     "reset": "node admin.js",
     "pretest": "eslint --ignore-path .gitignore .",
     "test": "echo \"No tests specified\" && exit 0"

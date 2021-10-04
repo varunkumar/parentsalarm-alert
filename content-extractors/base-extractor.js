@@ -2,8 +2,6 @@ import Log4js from 'log4js';
 import fetch from 'node-fetch';
 import sendMessage from '../slack.js';
 
-const logger = Log4js.getLogger('base-extractor');
-
 const instances = {};
 const ICON_MAP = {
   EContent: ':page_with_curl:',

@@ -7,8 +7,16 @@ import SMSExtractor from './content-extractors/sms-extractor.js';
 import { login, logout, sleep } from './utils.js';
 
 Log4js.configure({
-  appenders: { out: { type: 'stdout' } },
-  categories: { default: { appenders: ['out'], level: 'debug' } },
+  appenders: {
+    out: { type: 'stdout' },
+    slack: {
+      type: '@log4js-node/slack',
+      token: process.env.SLACK_OAUTH_TOKEN,
+      channel_id: 'parentsalarm-alert-logs',
+      username: 'parentsalarm-bot',
+    },
+  },
+  categories: { default: { appenders: ['out', 'slack'], level: 'debug' } },
 });
 const logger = Log4js.getLogger('index');
 

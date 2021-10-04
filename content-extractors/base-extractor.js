@@ -1,6 +1,36 @@
 import fetch from 'node-fetch';
+import sendMessage from '../slack.js';
 
 const instances = {};
+const ICON_MAP = {
+  EContent: ':page_with_curl:',
+  HomeWork: ':house_with_garden:',
+  NoticeBoard: ':loudspeaker:',
+  SMS: ':mailbox:',
+};
+
+const formatPosts = (watermarkKey, posts) => {
+  const section = watermarkKey.replace('Extractor', '');
+  // eslint-disable-next-line security/detect-object-injection
+  const icon = ICON_MAP[section];
+  const header = `${icon} ${section}: `;
+  if (!posts || posts.length === 0) {
+    return `${header} There are no new posts.\n`;
+  }
+  const formattedPosts = posts.map(
+    (post) =>
+      `        [<!date^${Math.floor(post.date / 1000)}^{date_short_pretty}|${
+        post.date
+      }>] *${post.title}*`
+  );
+  let messageCount = '';
+  if (formattedPosts.length > 1) {
+    messageCount = `There are *${formattedPosts.length}* new posts.`;
+  } else {
+    messageCount = 'There is *1* new post.';
+  }
+  return `${header} ${messageCount}\n\n${formattedPosts.join('\n')}\n\n`;
+};
 
 export default class BaseExtractor {
   constructor(browser) {
@@ -21,7 +51,7 @@ export default class BaseExtractor {
   }
 
   // Extracts posts since the last watermark. It updates the watermark with the latest post.
-  async extractNew() {
+  async extractNew(publish = false) {
     console.log(`[${this.watermarkKey}] Extracting items...`);
     const posts = await this.extractAll();
     console.log(`[${this.watermarkKey}] Extracted ${posts.length} items.`);
@@ -43,6 +73,18 @@ export default class BaseExtractor {
       console.log(
         `[${this.watermarkKey}] Watermark is empty. First time extraction.`
       );
+    }
+
+    if (publish) {
+      console.log(`[${this.watermarkKey}] Publishing items...`);
+      if (filteredPosts.length > 0) {
+        await sendMessage(formatPosts(this.watermarkKey, filteredPosts));
+        console.log(
+          `[${this.watermarkKey}] Published ${filteredPosts.length} items.`
+        );
+      } else {
+        console.log(`[${this.watermarkKey}] No new items to publish.`);
+      }
     }
 
     // Update watermark

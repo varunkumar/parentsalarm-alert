@@ -19,7 +19,7 @@ const run = async () => {
   ];
 
   const newItems = await Promise.all(
-    extractors.map((extractor) => extractor.extractNew())
+    extractors.map((extractor) => extractor.extractNew(true))
   );
   newItems.forEach((item) => {
     console.log(item);

@@ -14,6 +14,7 @@ Log4js.configure({
       token: process.env.SLACK_OAUTH_TOKEN,
       channel_id: 'parentsalarm-alert-logs',
       username: 'parentsalarm-bot',
+      layout: { type: 'pattern', pattern: '[%p] %c - %m%n' },
     },
   },
   categories: { default: { appenders: ['out', 'slack'], level: 'debug' } },

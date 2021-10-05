@@ -60,33 +60,16 @@ export default class BaseExtractor {
 
     // Filter posts after the watermark
     const watermark = await this.getWatermark();
-    let filteredPosts = posts;
-    if (watermark) {
-      this.logger.info(`Filtering items after ${watermark}...`);
-      filteredPosts = posts.filter(
-        (post) => new Date(post.date) > new Date(watermark)
-      );
-      this.logger.info(
-        `Found ${filteredPosts.length} new items since ${watermark}...`
-      );
-    } else {
-      this.logger.info(`Watermark is empty. First time extraction.`);
-    }
+    const filteredPosts = await this.filterPosts(posts, watermark);
 
     if (publish) {
-      if (filteredPosts.length > 0) {
-        this.logger.info(`Publishing items...`);
-        await sendMessage(formatPosts(this.watermarkKey, filteredPosts));
-        this.logger.info(`Published ${filteredPosts.length} items.`);
-      } else {
-        this.logger.info(`No new items to publish.`);
-      }
+      await this.publishPosts(filteredPosts);
     }
 
     // Update watermark
     if (filteredPosts.length > 0) {
-      const newWatermark = filteredPosts[0].date;
-      this.logger.info(`Updating watermark to ${newWatermark.toJSON()}...`);
+      const newWatermark = this.getWatermarkFromPosts(filteredPosts, watermark);
+      this.logger.info(`Updating watermark to ${newWatermark}...`);
       await this.updateWatermark(newWatermark);
     }
 
@@ -151,5 +134,42 @@ export default class BaseExtractor {
         `[${this.watermarkKey}] Failed to reset watermark. ${response.statusText}`
       );
     }
+  }
+
+  // Filter posts after the watermark
+  async filterPosts(posts, watermark) {
+    let filteredPosts = posts;
+    if (watermark) {
+      this.logger.info(`Filtering items after ${watermark}...`);
+      filteredPosts = posts.filter(
+        (post) => new Date(post.date) > new Date(watermark)
+      );
+      this.logger.info(
+        `Found ${filteredPosts.length} new items since ${watermark}...`
+      );
+    } else {
+      this.logger.info(`Watermark is empty. First time extraction.`);
+    }
+    return filteredPosts;
+  }
+
+  // Publish posts to slack
+  async publishPosts(posts) {
+    if (posts && posts.length > 0) {
+      this.logger.info(`Publishing items...`);
+      await sendMessage(formatPosts(this.watermarkKey, posts));
+      this.logger.info(`Published ${posts.length} items.`);
+    } else {
+      this.logger.info(`No new items to publish.`);
+    }
+  }
+
+  // Get watermark from posts
+  // eslint-disable-next-line class-methods-use-this
+  getWatermarkFromPosts(posts, currentWatermark) {
+    if (posts && posts.length > 0) {
+      return posts[0].date;
+    }
+    return currentWatermark;
   }
 }

@@ -1,11 +1,11 @@
 import { BASE_URL } from '../utils.js';
-import BaseExtractor from './base-extractor.js';
+import DateBasedExtractor from './date-based-extractor.js';
 
 const SUBMIT_SELECTOR = '.as-btn.cancel';
 const DATE_SELECTOR = '.ec-tab-topic1';
 const TITLE_SELECTOR = '.ec-tab-topic';
 
-export default class EContentExtractor extends BaseExtractor {
+export default class EContentExtractor extends DateBasedExtractor {
   async extractAll() {
     await this.page.goto(`${BASE_URL}/User/Student/ViewEcontent`, {
       waitUntil: 'domcontentloaded',

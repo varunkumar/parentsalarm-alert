@@ -1,0 +1,67 @@
+import BaseExtractor from './base-extractor.js';
+
+const decodeWatermark = (watermarkStr) => {
+  let watermark = '';
+  try {
+    watermark = JSON.parse(watermarkStr.replace(/'/g, '"').replace(/`/g, "'"));
+    watermark.date = new Date(watermark.date);
+  } catch (e) {
+    // fallback to old watermark format of only date
+    watermark = {
+      date: new Date(watermarkStr),
+      posts: {},
+    };
+  }
+  return watermark;
+};
+
+const encodeWatermark = (watermark) =>
+  JSON.stringify(watermark).replace(/'/g, '`').replace(/"/g, "'");
+
+// This class is used for extractors where only the date part is available and
+// the time is not. Watermark uses the datastructure:
+// {date: 'DATEJSON', posts: {'postTitle1': 1, 'postTitle2': 1}}
+export default class DateBasedExtractor extends BaseExtractor {
+  // Filter posts after the watermark
+  async filterPosts(posts, currentWatermark) {
+    let filteredPosts = posts;
+    const watermark = decodeWatermark(currentWatermark);
+    if (watermark) {
+      this.logger.info(`Filtering items after ${watermark.date.toJSON()}...`);
+      filteredPosts = posts.filter(
+        (post) =>
+          new Date(post.date) > watermark.date ||
+          (new Date(post.date).getTime() === watermark.date.getTime() &&
+            !watermark.posts[post.title])
+      );
+      this.logger.info(
+        `Found ${
+          filteredPosts.length
+        } new items since ${watermark.date.toJSON()}...`
+      );
+    } else {
+      this.logger.info(`Watermark is empty. First time extraction.`);
+    }
+    return filteredPosts;
+  }
+
+  // Get watermark from posts
+  // eslint-disable-next-line class-methods-use-this
+  getWatermarkFromPosts(posts, currentWatermark) {
+    const watermark = decodeWatermark(currentWatermark);
+    if (posts && posts.length > 0) {
+      let latestDate = watermark.date;
+      posts.forEach((post) => {
+        if (new Date(post.date) > latestDate) {
+          latestDate = new Date(post.date);
+          watermark.date = latestDate;
+          watermark.posts = {};
+        }
+        if (new Date(post.date).getTime() === latestDate.getTime()) {
+          watermark.posts[post.title] = 1;
+        }
+      });
+    }
+    return encodeWatermark(watermark);
+  }
+}

@@ -108,7 +108,7 @@ export default class BaseExtractor {
           'x-api-key': process.env.PERSISTENT_VALUE_ACCESS_TOKEN,
           'Content-Type': 'application/json',
         },
-        body: `{"value":"${watermark.toJSON()}"}`,
+        body: `{"value":"${watermark}"}`,
       }
     );
     if (response.status !== 200) {
@@ -168,7 +168,7 @@ export default class BaseExtractor {
   // eslint-disable-next-line class-methods-use-this
   getWatermarkFromPosts(posts, currentWatermark) {
     if (posts && posts.length > 0) {
-      return posts[0].date;
+      return posts[0].date.toJSON();
     }
     return currentWatermark;
   }

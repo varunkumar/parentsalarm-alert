@@ -5,7 +5,7 @@ const logger = Log4js.getLogger('slack');
 
 const web = new WebClient(process.env.SLACK_OAUTH_TOKEN);
 
-const sendMessage = async (message, channel = '#parentsalarm') => {
+const sendMessage = async (message, channel = process.env.CHANNEL) => {
   await web.chat.postMessage({
     channel,
     text: message,

@@ -12,8 +12,8 @@ Log4js.configure({
     slack: {
       type: '@log4js-node/slack',
       token: process.env.SLACK_OAUTH_TOKEN,
-      channel_id: 'parentsalarm-alert-logs',
-      username: 'parentsalarm-bot',
+      channel_id: process.env.LOGS_CHANNEL,
+      username: process.env.BOT_NAME,
       layout: { type: 'pattern', pattern: '[%p] %c - %m%n' },
     },
   },
@@ -33,7 +33,7 @@ const run = async () => {
     await new NoticeBoardExtractor(browser),
     await new SMSExtractor(browser),
   ];
-  logger.info(`Extractors initialized by ${process.env.ACTOR}...`);
+  logger.info(`Extractors initialized by ${process.env.EVENT_NAME}...`);
   const newItems = await Promise.all(
     extractors.map((extractor) => extractor.extractNew(true))
   );

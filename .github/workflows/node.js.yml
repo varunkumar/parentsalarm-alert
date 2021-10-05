@@ -31,7 +31,10 @@ jobs:
           PASSWORD=${{ secrets.PASSWORD }}
           PERSISTENT_VALUE_ACCESS_TOKEN=${{ secrets.PERSISTENT_VALUE_ACCESS_TOKEN }}
           SLACK_OAUTH_TOKEN=${{ secrets.SLACK_OAUTH_TOKEN }}
-          ACTOR=${{ github.event_name }}
+          CHANNEL=${{ secrets.CHANNEL }}
+          LOGS_CHANNEL=${{ secrets.LOGS_CHANNEL }}
+          BOT_NAME=${{ secrets.BOT_NAME }}
+          EVENT_NAME=${{ github.event_name }}
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:

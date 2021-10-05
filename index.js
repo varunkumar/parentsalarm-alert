@@ -33,7 +33,7 @@ const run = async () => {
     await new NoticeBoardExtractor(browser),
     await new SMSExtractor(browser),
   ];
-
+  logger.info(`Extractors initialized by ${process.env.ACTOR}...`);
   const newItems = await Promise.all(
     extractors.map((extractor) => extractor.extractNew(true))
   );

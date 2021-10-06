@@ -34,6 +34,8 @@ const run = async () => {
     await new SMSExtractor(browser),
   ];
   logger.info(`Extractors initialized by ${process.env.EVENT_NAME}...`);
+  logger.info('Force exiting to test retries');
+  process.exit(1);
   const newItems = await Promise.all(
     extractors.map((extractor) => extractor.extractNew(true))
   );

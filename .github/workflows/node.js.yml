@@ -43,4 +43,9 @@ jobs:
     - run: npm ci
     - run: npm test
     - run: npm run build --if-present
-    - run: npm start
+    - name: npm start
+      uses: nick-invision/retry@v2
+      with:
+        timeout_seconds: 15
+        max_attempts: 3
+        command: npm run start

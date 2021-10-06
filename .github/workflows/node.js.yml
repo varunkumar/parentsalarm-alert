@@ -46,6 +46,7 @@ jobs:
     - name: npm start
       uses: nick-invision/retry@v2
       with:
-        timeout_seconds: 15
+        timeout_minutes: 15
         max_attempts: 3
+        retry_on: error
         command: npm run start

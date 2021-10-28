@@ -1,7 +1,7 @@
 import { BASE_URL } from '../utils.js';
 import BaseExtractor from './base-extractor.js';
 
-const DATE_SELECTOR = 'section.bn p span[style="float:right"]';
+const DATE_SELECTOR = 'section.bn span[style="float:right"]';
 const TITLE_SELECTOR = 'section.bn b';
 
 export default class NoticeBoardExtractor extends BaseExtractor {

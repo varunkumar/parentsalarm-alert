@@ -32,7 +32,7 @@ export default class DateBasedExtractor extends BaseExtractor {
         (post) =>
           new Date(post.date) > watermark.date ||
           (new Date(post.date).getTime() === watermark.date.getTime() &&
-            !watermark.posts[post.title])
+            !watermark.posts[post.title.replace(/'/g, '').replace(/"/g, '')])
       );
       this.logger.info(
         `Found ${
@@ -58,7 +58,7 @@ export default class DateBasedExtractor extends BaseExtractor {
           watermark.posts = {};
         }
         if (new Date(post.date).getTime() === latestDate.getTime()) {
-          watermark.posts[post.title] = 1;
+          watermark.posts[post.title.replace(/'/g, '').replace(/"/g, '')] = 1;
         }
       });
     }

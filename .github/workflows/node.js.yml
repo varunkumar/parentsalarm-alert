@@ -26,7 +26,7 @@ jobs:
     - name: Create Secrets File Action
       uses: varunkumar/create-env-action@main
       with:
-        secrets: |
+        env: |
           USER_NAME=${{ secrets.USER_NAME }}
           PASSWORD=${{ secrets.PASSWORD }}
           PERSISTENT_VALUE_ACCESS_TOKEN=${{ secrets.PERSISTENT_VALUE_ACCESS_TOKEN }}

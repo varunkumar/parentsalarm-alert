@@ -24,6 +24,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Create env File Action
+      id: create-env-file
       uses: varunkumar/create-env-action@main
       with:
         env: |
@@ -49,4 +50,4 @@ jobs:
         timeout_minutes: 15
         max_attempts: 3
         retry_on: error
-        command: npm run start
+        command: ENV_FILE_PATH=${{ steps.create-env-file.outputs.location }} npm run start

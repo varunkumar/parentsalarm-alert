@@ -1,6 +1,11 @@
 import * as dotenv from 'dotenv';
 
-dotenv.config();
+const result = dotenv.config();
+
+if (result.error) {
+  // read from env file created by prev action
+  dotenv.config({ path: process.env.ENV_FILE_PATH });
+}
 
 export const BASE_URL = 'https://www.parentsalarm.com';
 

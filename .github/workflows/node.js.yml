@@ -35,7 +35,6 @@ jobs:
           LOGS_CHANNEL=${{ secrets.LOGS_CHANNEL }}
           BOT_NAME=${{ secrets.BOT_NAME }}
           EVENT_NAME=${{ github.event_name }}
-        path: './'
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:

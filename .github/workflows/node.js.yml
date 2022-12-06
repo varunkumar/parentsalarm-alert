@@ -24,7 +24,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Create Secrets File Action
-      uses: varunkumar/create-secrets-file@v2.0.0
+      uses: varunkumar/create-secrets-file
       with:
         secrets: |
           USER_NAME=${{ secrets.USER_NAME }}

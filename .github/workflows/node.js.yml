@@ -18,11 +18,11 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [18.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Create Secrets File Action
       uses: du5rte/create-secrets-file@v1
       with:
@@ -36,7 +36,7 @@ jobs:
           BOT_NAME=${{ secrets.BOT_NAME }}
           EVENT_NAME=${{ github.event_name }}
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'

@@ -1,4 +1,6 @@
-import 'secrets';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 export const BASE_URL = 'https://www.parentsalarm.com';
 

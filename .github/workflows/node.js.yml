@@ -23,7 +23,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Create Secrets File Action
+    - name: Create env File Action
       uses: varunkumar/create-env-action@main
       with:
         env: |

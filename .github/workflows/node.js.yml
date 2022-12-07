@@ -25,7 +25,7 @@ jobs:
     - uses: actions/checkout@v3
     - name: Create env File Action
       id: create-env-file
-      uses: varunkumar/create-env-action@main
+      uses: varunkumar/create-env-action@v1
       with:
         env: |
           USER_NAME="${{ secrets.USER_NAME }}"

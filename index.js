@@ -27,13 +27,13 @@ const run = async () => {
   });
   const page = await login(browser);
 
+  logger.info(`Extraction initialized by ${process.env.EVENT_NAME}.`);
   const extractors = [
     await new EContentExtractor(browser),
     await new HomeWorkExtractor(browser),
     await new NoticeBoardExtractor(browser),
     await new SMSExtractor(browser),
   ];
-  logger.info(`Extractors initialized by ${process.env.EVENT_NAME}...`);
   const newItems = await Promise.all(
     extractors.map((extractor) => extractor.extractNew(true))
   );

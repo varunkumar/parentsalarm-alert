@@ -27,7 +27,7 @@ export default class DateBasedExtractor extends BaseExtractor {
     let filteredPosts = posts;
     const watermark = decodeWatermark(currentWatermark);
     if (watermark) {
-      this.logger.info(`Filtering items after ${watermark.date.toJSON()}...`);
+      this.logger.info(`Filtering items after ${watermark.date.toJSON()}.`);
       filteredPosts = posts.filter(
         (post) =>
           new Date(post.date) > watermark.date ||
@@ -37,7 +37,7 @@ export default class DateBasedExtractor extends BaseExtractor {
       this.logger.info(
         `Found ${
           filteredPosts.length
-        } new items since ${watermark.date.toJSON()}...`
+        } new items since ${watermark.date.toJSON()}.`
       );
     } else {
       this.logger.info(`Watermark is empty. First time extraction.`);

@@ -140,12 +140,12 @@ export default class BaseExtractor {
   async filterPosts(posts, watermark) {
     let filteredPosts = posts;
     if (watermark) {
-      this.logger.info(`Filtering items after ${watermark}...`);
+      this.logger.info(`Filtering items after ${watermark}.`);
       filteredPosts = posts.filter(
         (post) => new Date(post.date) > new Date(watermark)
       );
       this.logger.info(
-        `Found ${filteredPosts.length} new items since ${watermark}...`
+        `Found ${filteredPosts.length} new items since ${watermark}.`
       );
     } else {
       this.logger.info(`Watermark is empty. First time extraction.`);

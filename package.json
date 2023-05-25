@@ -37,6 +37,7 @@
     "puppeteer": "^20.3.0"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^2.0.3",
     "ansi-regex": "~6.0.1",
     "eslint": "^8.41.0",
     "eslint-config-airbnb-base": "^15.0.0",

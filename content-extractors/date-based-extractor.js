@@ -26,7 +26,9 @@ class DateBasedExtractor extends BaseExtractor {
   async filterPosts(posts, currentWatermark) {
     let filteredPosts = posts;
     const watermark = decodeWatermark(currentWatermark);
-    if (watermark) {
+    if (Number.isNaN(watermark.date.getTime())) {
+      this.logger.info(`Watermark is empty. First time extraction.`);
+    } else {
       this.logger.info(`Filtering items after ${watermark.date.toJSON()}.`);
       filteredPosts = posts.filter(
         (post) =>
@@ -39,8 +41,6 @@ class DateBasedExtractor extends BaseExtractor {
           filteredPosts.length
         } new items since ${watermark.date.toJSON()}.`
       );
-    } else {
-      this.logger.info(`Watermark is empty. First time extraction.`);
     }
     return filteredPosts;
   }
@@ -52,7 +52,10 @@ class DateBasedExtractor extends BaseExtractor {
     if (posts && posts.length > 0) {
       let latestDate = watermark.date;
       posts.forEach((post) => {
-        if (new Date(post.date) > latestDate) {
+        if (
+          Number.isNaN(latestDate.getTime()) ||
+          new Date(post.date) > latestDate
+        ) {
           latestDate = new Date(post.date);
           watermark.date = latestDate;
           watermark.posts = {};

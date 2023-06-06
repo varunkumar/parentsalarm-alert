@@ -34,13 +34,14 @@ const formatPosts = (watermarkKey, posts) => {
 };
 
 class BaseExtractor {
-  async init(browser) {
+  async init(browser, account) {
     const { name } = this.constructor;
     // eslint-disable-next-line security/detect-object-injection
     if (instances[name] !== undefined) {
       // eslint-disable-next-line security/detect-object-injection
       return instances[name];
     }
+    this.account = account;
     this.page = await browser.newPage();
     this.watermarkKey = name;
     this.logger = Log4js.getLogger(name);
@@ -85,12 +86,14 @@ class BaseExtractor {
       {
         method: 'GET',
         headers: {
-          'x-api-key': process.env.PERSISTENT_VALUE_ACCESS_TOKEN || '',
+          'x-api-key':
+            process.env[`${this.account}_PERSISTENT_VALUE_ACCESS_TOKEN`] || '',
         },
       }
     );
     if (response.status !== 200) {
-      throw new Error(`[${this.watermarkKey}] Failed to get watermark.`);
+      return undefined;
+      // throw new Error(`[${this.watermarkKey}] Failed to get watermark.`);
     }
     const watermark = await response.json();
     return watermark.data;
@@ -103,7 +106,8 @@ class BaseExtractor {
       {
         method: 'POST',
         headers: {
-          'x-api-key': process.env.PERSISTENT_VALUE_ACCESS_TOKEN,
+          'x-api-key':
+            process.env[`${this.account}_PERSISTENT_VALUE_ACCESS_TOKEN`] || '',
           'Content-Type': 'application/json',
         },
         body: `{"value":"${watermark}"}`,
@@ -121,7 +125,8 @@ class BaseExtractor {
       {
         method: 'POST',
         headers: {
-          'x-api-key': process.env.PERSISTENT_VALUE_ACCESS_TOKEN,
+          'x-api-key':
+            process.env[`${this.account}_PERSISTENT_VALUE_ACCESS_TOKEN`] || '',
           'Content-Type': 'application/json',
         },
         body: `{"value":"2015-11-07T08:48:00.000Z"}`,
@@ -155,7 +160,11 @@ class BaseExtractor {
   async publishPosts(posts) {
     if (posts && posts.length > 0) {
       this.logger.info(`Publishing items...`);
-      await sendMessage(formatPosts(this.watermarkKey, posts));
+      let channel = process.env[`${this.account}_CHANNEL`];
+      if (this.watermarkKey === 'SMSExtractor') {
+        channel = process.env[`${this.account}_DM_CHANNEL`];
+      }
+      await sendMessage(formatPosts(this.watermarkKey, posts), channel);
       this.logger.info(`Published ${posts.length} items.`);
     } else {
       this.logger.info(`No new items to publish.`);

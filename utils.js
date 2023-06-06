@@ -16,7 +16,11 @@ export const sleep = async (ms) => {
   });
 };
 
-export const login = async (browser) => {
+export const login = async (
+  browser,
+  username = process.env.USER_NAME,
+  password = process.env.PASSWORD
+) => {
   const page = await browser.newPage();
   await page.goto(BASE_URL, {
     waitUntil: 'networkidle2',
@@ -29,10 +33,10 @@ export const login = async (browser) => {
   const SUBMIT_SELECTOR = '#btnSignIn';
 
   await page.click(USER_NAME_SELECTOR);
-  await page.keyboard.type(process.env.USER_NAME);
+  await page.keyboard.type(username);
 
   await page.click(PASSWORD_SELECTOR);
-  await page.keyboard.type(process.env.PASSWORD);
+  await page.keyboard.type(password);
 
   await page.click(SUBMIT_SELECTOR);
 

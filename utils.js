@@ -8,6 +8,7 @@ if (result.error) {
 }
 
 export const BASE_URL = 'https://www.parentsalarm.com';
+export const SCREENSHOT_PATH = './screenshot/';
 
 export const sleep = async (ms) => {
   await new Promise((r) => {
@@ -21,6 +22,7 @@ export const login = async (browser) => {
     waitUntil: 'networkidle2',
     timeout: 0,
   });
+  await page.screenshot({ path: `${SCREENSHOT_PATH}/home.png` });
 
   const USER_NAME_SELECTOR = '#LoginId';
   const PASSWORD_SELECTOR = '#LoginPassword';
@@ -34,7 +36,14 @@ export const login = async (browser) => {
 
   await page.click(SUBMIT_SELECTOR);
 
-  await page.waitForNavigation();
+  await page.screenshot({ path: `${SCREENSHOT_PATH}/login-form-filled.png` });
+  await page.waitForNavigation({
+    waitUntil: 'networkidle2',
+    timeout: 0,
+  });
+  await page.screenshot({
+    path: `${SCREENSHOT_PATH}/login-form-submitted.png`,
+  });
 
   return page;
 };

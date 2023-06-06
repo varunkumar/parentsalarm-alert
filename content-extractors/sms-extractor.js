@@ -1,4 +1,4 @@
-import { BASE_URL } from '../utils.js';
+import { BASE_URL, SCREENSHOT_PATH } from '../utils.js';
 import { BaseExtractor } from './base-extractor.js';
 
 const START_DATE_SELECTOR = '#valSentSmsDetails_StartDate';
@@ -35,10 +35,7 @@ class SMSExtractor extends BaseExtractor {
       this.page.waitForNavigation({ waitUntil: 'networkidle2' }),
     ]);
 
-    // take screenshot
-    await this.page.screenshot({
-      path: `sms-extractor.png`,
-    });
+    await this.page.screenshot({ path: `${SCREENSHOT_PATH}/sms.png` });
 
     let posts = await this.page.$$eval(DATA_SELECTOR, (elements) =>
       elements.map((e) => {

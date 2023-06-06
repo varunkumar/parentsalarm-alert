@@ -1,4 +1,4 @@
-import { BASE_URL } from '../utils.js';
+import { BASE_URL, SCREENSHOT_PATH } from '../utils.js';
 import { DateBasedExtractor } from './date-based-extractor.js';
 
 const DATE_SELECTOR = '.table-row:not([title])';
@@ -9,6 +9,7 @@ class HomeWorkExtractor extends DateBasedExtractor {
     await this.page.goto(`${BASE_URL}/User/Student/HomeWork`, {
       waitUntil: 'domcontentloaded',
     });
+    await this.page.screenshot({ path: `${SCREENSHOT_PATH}/homework.png` });
 
     const dates = await this.page.$$eval(DATE_SELECTOR, (elements) =>
       elements.map((e) => e.textContent)

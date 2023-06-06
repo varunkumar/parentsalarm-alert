@@ -1,4 +1,4 @@
-import { BASE_URL } from '../utils.js';
+import { BASE_URL, SCREENSHOT_PATH } from '../utils.js';
 import { DateBasedExtractor } from './date-based-extractor.js';
 
 const SUBMIT_SELECTOR = '.as-btn.cancel';
@@ -10,11 +10,16 @@ class EContentExtractor extends DateBasedExtractor {
     await this.page.goto(`${BASE_URL}/User/Student/ViewEcontent`, {
       waitUntil: 'domcontentloaded',
     });
+    await this.page.screenshot({ path: `${SCREENSHOT_PATH}/econtent.png` });
 
     await Promise.all([
       this.page.click(SUBMIT_SELECTOR),
       this.page.waitForNavigation({ waitUntil: 'networkidle2' }),
     ]);
+
+    await this.page.screenshot({
+      path: `${SCREENSHOT_PATH}/econtent-submitted.png`,
+    });
 
     const dates = await this.page.$$eval(DATE_SELECTOR, (elements) =>
       elements.map((e) => e.textContent)

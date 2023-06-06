@@ -16,6 +16,7 @@ export default [
       es2021: true,
       node: true,
     },
+    ignorePatterns: ['node_modules/', '**/*.config.js'],
     extends: ['airbnb-base', 'prettier', 'plugin:security/recommended'],
     plugins: ['security'],
     parserOptions: {

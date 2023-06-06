@@ -1,5 +1,5 @@
-import { BASE_URL } from '../utils.js';
-import BaseExtractor from './base-extractor.js';
+import { BASE_URL, SCREENSHOT_PATH } from '../utils.js';
+import { BaseExtractor } from './base-extractor.js';
 
 const START_DATE_SELECTOR = '#valSentSmsDetails_StartDate';
 const SUBMIT_SELECTOR = '#btnGetData';
@@ -17,7 +17,7 @@ const getStartDate = () => {
     year: 'numeric',
   });
 };
-export default class SMSExtractor extends BaseExtractor {
+class SMSExtractor extends BaseExtractor {
   async extractAll() {
     await this.page.goto(`${BASE_URL}/User/Student/ReceivedSms`, {
       waitUntil: 'domcontentloaded',
@@ -35,10 +35,7 @@ export default class SMSExtractor extends BaseExtractor {
       this.page.waitForNavigation({ waitUntil: 'networkidle2' }),
     ]);
 
-    // take screenshot
-    await this.page.screenshot({
-      path: `sms-extractor.png`,
-    });
+    await this.page.screenshot({ path: `${SCREENSHOT_PATH}/sms.png` });
 
     let posts = await this.page.$$eval(DATA_SELECTOR, (elements) =>
       elements.map((e) => {
@@ -55,3 +52,5 @@ export default class SMSExtractor extends BaseExtractor {
     return posts;
   }
 }
+
+export { SMSExtractor, getStartDate };

@@ -1,20 +1,25 @@
-import { BASE_URL } from '../utils.js';
-import DateBasedExtractor from './date-based-extractor.js';
+import { BASE_URL, SCREENSHOT_PATH } from '../utils.js';
+import { DateBasedExtractor } from './date-based-extractor.js';
 
 const SUBMIT_SELECTOR = '.as-btn.cancel';
 const DATE_SELECTOR = '.ec-tab-topic1';
 const TITLE_SELECTOR = '.ec-tab-topic';
 
-export default class EContentExtractor extends DateBasedExtractor {
+class EContentExtractor extends DateBasedExtractor {
   async extractAll() {
     await this.page.goto(`${BASE_URL}/User/Student/ViewEcontent`, {
       waitUntil: 'domcontentloaded',
     });
+    await this.page.screenshot({ path: `${SCREENSHOT_PATH}/econtent.png` });
 
     await Promise.all([
       this.page.click(SUBMIT_SELECTOR),
       this.page.waitForNavigation({ waitUntil: 'networkidle2' }),
     ]);
+
+    await this.page.screenshot({
+      path: `${SCREENSHOT_PATH}/econtent-submitted.png`,
+    });
 
     const dates = await this.page.$$eval(DATE_SELECTOR, (elements) =>
       elements.map((e) => e.textContent)
@@ -50,3 +55,6 @@ export default class EContentExtractor extends DateBasedExtractor {
     return posts;
   }
 }
+
+// eslint-disable-next-line import/prefer-default-export
+export { EContentExtractor };

@@ -1,14 +1,15 @@
-import { BASE_URL } from '../utils.js';
-import DateBasedExtractor from './date-based-extractor.js';
+import { BASE_URL, SCREENSHOT_PATH } from '../utils.js';
+import { DateBasedExtractor } from './date-based-extractor.js';
 
 const DATE_SELECTOR = '.table-row:not([title])';
 const TITLE_SELECTOR = '.table-row[title]';
 
-export default class HomeWorkExtractor extends DateBasedExtractor {
+class HomeWorkExtractor extends DateBasedExtractor {
   async extractAll() {
     await this.page.goto(`${BASE_URL}/User/Student/HomeWork`, {
       waitUntil: 'domcontentloaded',
     });
+    await this.page.screenshot({ path: `${SCREENSHOT_PATH}/homework.png` });
 
     const dates = await this.page.$$eval(DATE_SELECTOR, (elements) =>
       elements.map((e) => e.textContent)
@@ -34,3 +35,6 @@ export default class HomeWorkExtractor extends DateBasedExtractor {
     return posts;
   }
 }
+
+// eslint-disable-next-line import/prefer-default-export
+export { HomeWorkExtractor };

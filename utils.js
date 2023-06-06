@@ -8,7 +8,7 @@ if (result.error) {
 }
 
 export const BASE_URL = 'https://www.parentsalarm.com';
-export const SCREENSHOT_PATH = './screenshot/';
+export const SCREENSHOT_PATH = './screenshot';
 
 export const sleep = async (ms) => {
   await new Promise((r) => {

@@ -1,0 +1,54 @@
+# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Aganvee
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '5/10 * * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create env File Action
+        id: create-env-file
+        uses: varunkumar/create-env-action@v1
+        with:
+          env: |
+            ACCOUNTS="AGANVEE"
+            SLACK_OAUTH_TOKEN="${{ secrets.SLACK_OAUTH_TOKEN }}"
+            LOGS_CHANNEL="${{ secrets.LOGS_CHANNEL }}"
+            BOT_NAME="${{ secrets.BOT_NAME }}"
+            EVENT_NAME="${{ github.event_name }}"
+            AGANVEE_USER_NAME="${{ secrets.AGANVEE_USER_NAME }}"
+            AGANVEE_PASSWORD="${{ secrets.AGANVEE_PASSWORD }}"
+            AGANVEE_PERSISTENT_VALUE_ACCESS_TOKEN="${{ secrets.AGANVEE_PERSISTENT_VALUE_ACCESS_TOKEN }}"
+            AGANVEE_CHANNEL="${{ secrets.AGANVEE_CHANNEL }}"
+            AGANVEE_DM_CHANNEL="${{ secrets.AGANVEE_DM_CHANNEL }}"
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - run: npm ci
+      - run: npm test
+      - run: npm run build --if-present
+      - name: npm start
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 15
+          max_attempts: 3
+          retry_on: error
+          command: ENV_FILE_PATH=${{ steps.create-env-file.outputs.location }} npm run start

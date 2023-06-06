@@ -1,6 +1,6 @@
 import Log4js from 'log4js';
 import fetch from 'node-fetch';
-import sendMessage from '../slack.js';
+import { sendMessage } from '../slack.js';
 
 const instances = {};
 const ICON_MAP = {
@@ -33,23 +33,21 @@ const formatPosts = (watermarkKey, posts) => {
   return `${header} ${messageCount}\n\n${formattedPosts.join('\n')}\n\n`;
 };
 
-export default class BaseExtractor {
-  constructor(browser) {
+class BaseExtractor {
+  async init(browser) {
     const { name } = this.constructor;
-    return (async () => {
+    // eslint-disable-next-line security/detect-object-injection
+    if (instances[name] !== undefined) {
       // eslint-disable-next-line security/detect-object-injection
-      if (instances[name] !== undefined) {
-        // eslint-disable-next-line security/detect-object-injection
-        return instances[name];
-      }
-      this.page = await browser.newPage();
-      this.watermarkKey = name;
-      this.logger = Log4js.getLogger(name);
-      Object.freeze(this);
-      // eslint-disable-next-line security/detect-object-injection
-      instances[name] = this;
-      return this;
-    })();
+      return instances[name];
+    }
+    this.page = await browser.newPage();
+    this.watermarkKey = name;
+    this.logger = Log4js.getLogger(name);
+    Object.freeze(this);
+    // eslint-disable-next-line security/detect-object-injection
+    instances[name] = this;
+    return this;
   }
 
   // Extracts posts since the last watermark. It updates the watermark with the latest post.
@@ -173,3 +171,5 @@ export default class BaseExtractor {
     return currentWatermark;
   }
 }
+
+export { BaseExtractor, formatPosts };

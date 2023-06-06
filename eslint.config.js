@@ -20,11 +20,11 @@ export default [
     extends: ['airbnb-base', 'prettier', 'plugin:security/recommended'],
     plugins: ['security'],
     parserOptions: {
-      ecmaVersion: 12,
+      ecmaVersion: 'latest',
       sourceType: 'module',
     },
     rules: {
-      'import/extensions': [0],
+      'import/extensions': ['error', 'ignorePackages'],
       'import/no-extraneous-dependencies': [
         'error',
         { devDependencies: ['*.config.js'] },

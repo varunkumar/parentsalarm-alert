@@ -1,5 +1,5 @@
 import { BASE_URL } from '../utils.js';
-import BaseExtractor from './base-extractor.js';
+import { BaseExtractor } from './base-extractor.js';
 
 const START_DATE_SELECTOR = '#valSentSmsDetails_StartDate';
 const SUBMIT_SELECTOR = '#btnGetData';
@@ -17,7 +17,7 @@ const getStartDate = () => {
     year: 'numeric',
   });
 };
-export default class SMSExtractor extends BaseExtractor {
+class SMSExtractor extends BaseExtractor {
   async extractAll() {
     await this.page.goto(`${BASE_URL}/User/Student/ReceivedSms`, {
       waitUntil: 'domcontentloaded',
@@ -55,3 +55,5 @@ export default class SMSExtractor extends BaseExtractor {
     return posts;
   }
 }
+
+export { SMSExtractor, getStartDate };

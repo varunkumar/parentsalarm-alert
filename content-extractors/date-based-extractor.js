@@ -1,4 +1,4 @@
-import BaseExtractor from './base-extractor.js';
+import { BaseExtractor } from './base-extractor.js';
 
 const decodeWatermark = (watermarkStr) => {
   let watermark = '';
@@ -21,7 +21,7 @@ const encodeWatermark = (watermark) =>
 // This class is used for extractors where only the date part is available and
 // the time is not. Watermark uses the datastructure:
 // {date: 'DATEJSON', posts: {'postTitle1': 1, 'postTitle2': 1}}
-export default class DateBasedExtractor extends BaseExtractor {
+class DateBasedExtractor extends BaseExtractor {
   // Filter posts after the watermark
   async filterPosts(posts, currentWatermark) {
     let filteredPosts = posts;
@@ -65,3 +65,5 @@ export default class DateBasedExtractor extends BaseExtractor {
     return encodeWatermark(watermark);
   }
 }
+
+export { DateBasedExtractor, decodeWatermark, encodeWatermark };

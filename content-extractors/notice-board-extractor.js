@@ -1,10 +1,10 @@
 import { BASE_URL } from '../utils.js';
-import BaseExtractor from './base-extractor.js';
+import { BaseExtractor } from './base-extractor.js';
 
 const DATE_SELECTOR = 'section.bn span[style="float:right"]';
 const TITLE_SELECTOR = 'section.bn b';
 
-export default class NoticeBoardExtractor extends BaseExtractor {
+class NoticeBoardExtractor extends BaseExtractor {
   async extractAll() {
     await this.page.goto(`${BASE_URL}/User/Student/NoticeBoard`, {
       waitUntil: 'domcontentloaded',
@@ -38,3 +38,6 @@ export default class NoticeBoardExtractor extends BaseExtractor {
     return posts;
   }
 }
+
+// eslint-disable-next-line import/prefer-default-export
+export { NoticeBoardExtractor };

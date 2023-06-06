@@ -10,7 +10,9 @@ if (result.error) {
 export const BASE_URL = 'https://www.parentsalarm.com';
 
 export const sleep = async (ms) => {
-  await new Promise((r) => setTimeout(r, ms));
+  await new Promise((r) => {
+    setTimeout(r, ms);
+  });
 };
 
 export const login = async (browser) => {

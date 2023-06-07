@@ -22,10 +22,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Test step
-        id: test
-        run: |
-          exit 1
       - name: Create env File Action
         id: create-env-file
         uses: varunkumar/create-env-action@v1

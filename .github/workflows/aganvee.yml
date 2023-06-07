@@ -12,7 +12,7 @@ on:
     - cron: '5/10 * * * *'
 
 jobs:
-  build:
+  extract-ag:
     runs-on: ubuntu-latest
 
     strategy:

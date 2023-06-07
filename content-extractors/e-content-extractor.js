@@ -9,12 +9,16 @@ class EContentExtractor extends DateBasedExtractor {
   async extractAll() {
     await this.page.goto(`${BASE_URL}/User/Student/ViewEcontent`, {
       waitUntil: 'domcontentloaded',
+      timeout: 60000,
     });
     await this.page.screenshot({ path: `${SCREENSHOT_PATH}/econtent.png` });
 
     await Promise.all([
       this.page.click(SUBMIT_SELECTOR),
-      this.page.waitForNavigation({ waitUntil: 'networkidle2' }),
+      this.page.waitForNavigation({
+        waitUntil: 'networkidle2',
+        timeout: 60000,
+      }),
     ]);
 
     await this.page.screenshot({

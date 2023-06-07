@@ -8,6 +8,7 @@ class HomeWorkExtractor extends DateBasedExtractor {
   async extractAll() {
     await this.page.goto(`${BASE_URL}/User/Student/HomeWork`, {
       waitUntil: 'domcontentloaded',
+      timeout: 60000,
     });
     await this.page.screenshot({ path: `${SCREENSHOT_PATH}/homework.png` });
 

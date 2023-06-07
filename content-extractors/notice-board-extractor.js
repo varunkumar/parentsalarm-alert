@@ -8,6 +8,7 @@ class NoticeBoardExtractor extends BaseExtractor {
   async extractAll() {
     await this.page.goto(`${BASE_URL}/User/Student/NoticeBoard`, {
       waitUntil: 'domcontentloaded',
+      timeout: 60000,
     });
     await this.page.screenshot({ path: `${SCREENSHOT_PATH}/noticeboard.png` });
 

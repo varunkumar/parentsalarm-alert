@@ -24,7 +24,7 @@ export const login = async (
   const page = await browser.newPage();
   await page.goto(BASE_URL, {
     waitUntil: 'networkidle2',
-    timeout: 0,
+    timeout: 60000,
   });
   await page.screenshot({ path: `${SCREENSHOT_PATH}/home.png` });
 
@@ -43,7 +43,7 @@ export const login = async (
   await page.screenshot({ path: `${SCREENSHOT_PATH}/login-form-filled.png` });
   await page.waitForNavigation({
     waitUntil: 'networkidle2',
-    timeout: 0,
+    timeout: 60000,
   });
   await page.screenshot({
     path: `${SCREENSHOT_PATH}/login-form-submitted.png`,

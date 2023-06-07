@@ -21,7 +21,9 @@ class SMSExtractor extends BaseExtractor {
   async extractAll() {
     await this.page.goto(`${BASE_URL}/User/Student/ReceivedSms`, {
       waitUntil: 'domcontentloaded',
+      timeout: 60000,
     });
+    await this.page.screenshot({ path: `${SCREENSHOT_PATH}/sms.png` });
 
     await Promise.all([
       this.page.$eval(
@@ -32,10 +34,15 @@ class SMSExtractor extends BaseExtractor {
         getStartDate()
       ),
       this.page.click(SUBMIT_SELECTOR),
-      this.page.waitForNavigation({ waitUntil: 'networkidle2' }),
+      this.page.waitForNavigation({
+        waitUntil: 'networkidle2',
+        timeout: 60000,
+      }),
     ]);
 
-    await this.page.screenshot({ path: `${SCREENSHOT_PATH}/sms.png` });
+    await this.page.screenshot({
+      path: `${SCREENSHOT_PATH}/sms-submitted.png`,
+    });
 
     let posts = await this.page.$$eval(DATA_SELECTOR, (elements) =>
       elements.map((e) => {

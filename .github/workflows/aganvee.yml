@@ -22,6 +22,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - name: Test step
+        id: test
+        run: |
+          echo "Hello World"
+      - name: Test step
+        id: test
+        run: |
+          echo "Hello World"
       - name: Create env File Action
         id: create-env-file
         uses: varunkumar/create-env-action@v1

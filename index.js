@@ -18,7 +18,7 @@ Log4js.configure({
       layout: { type: 'pattern', pattern: '[%p] %c - %m%n' },
     },
   },
-  categories: { default: { appenders: ['out', 'slack'], level: 'debug' } },
+  categories: { default: { appenders: ['out'], level: 'debug' } },
 });
 const logger = Log4js.getLogger('index');
 

@@ -1,0 +1,23 @@
+{
+  "display_information": {
+    "name": "GCIS",
+    "description": "GCIS ParentsAlarm updates",
+    "background_color": "#737373"
+  },
+  "features": {
+    "bot_user": {
+      "display_name": "gcis-bot",
+      "always_online": true
+    }
+  },
+  "oauth_config": {
+    "scopes": {
+      "bot": ["chat:write"]
+    }
+  },
+  "settings": {
+    "org_deploy_enabled": false,
+    "socket_mode_enabled": false,
+    "token_rotation_enabled": false
+  }
+}

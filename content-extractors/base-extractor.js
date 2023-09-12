@@ -36,10 +36,11 @@ const formatPosts = (watermarkKey, posts) => {
 class BaseExtractor {
   async init(browser, account) {
     const { name } = this.constructor;
+    const instanceCacheKey = `${name}_${account}`;
     // eslint-disable-next-line security/detect-object-injection
-    if (instances[name] !== undefined) {
+    if (instances[instanceCacheKey] !== undefined) {
       // eslint-disable-next-line security/detect-object-injection
-      return instances[name];
+      return instances[instanceCacheKey];
     }
     this.account = account;
     this.page = await browser.newPage();
@@ -47,7 +48,7 @@ class BaseExtractor {
     this.logger = Log4js.getLogger(name);
     Object.freeze(this);
     // eslint-disable-next-line security/detect-object-injection
-    instances[name] = this;
+    instances[instanceCacheKey] = this;
     return this;
   }
 

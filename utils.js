@@ -7,7 +7,7 @@ if (result.error) {
   dotenv.config({ path: process.env.ENV_FILE_PATH });
 }
 
-export const BASE_URL = 'https://www.parentsalarm.com';
+export const BASE_URL = 'https://student.schoolcanvas.com';
 export const SCREENSHOT_PATH = './screenshot';
 
 export const sleep = async (ms) => {
@@ -38,13 +38,14 @@ export const login = async (
   await page.click(PASSWORD_SELECTOR);
   await page.keyboard.type(password);
 
+  await page.screenshot({ path: `${SCREENSHOT_PATH}/login-form-filled.png` });
   await page.click(SUBMIT_SELECTOR);
 
-  await page.screenshot({ path: `${SCREENSHOT_PATH}/login-form-filled.png` });
+  /* TODO: Is there a better way to wait for the form submission?
   await page.waitForNavigation({
     waitUntil: 'networkidle2',
     timeout: 60000,
-  });
+  }); */
   await page.screenshot({
     path: `${SCREENSHOT_PATH}/login-form-submitted.png`,
   });
@@ -54,4 +55,7 @@ export const login = async (
 
 export const logout = async (page) => {
   await page.goto(`${BASE_URL}/About/LogOut`);
+  await page.screenshot({
+    path: `${SCREENSHOT_PATH}/logout.png`,
+  });
 };

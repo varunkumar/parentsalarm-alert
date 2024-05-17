@@ -13,7 +13,7 @@ class HomeWorkExtractor extends DateBasedExtractor {
     await this.page.screenshot({ path: `${SCREENSHOT_PATH}/homework.png` });
 
     const dates = await this.page.$$eval(DATE_SELECTOR, (elements) =>
-      elements.map((e) => e.textContent)
+      elements.map((e) => e.textContent).filter((e) => e.trim().length > 0)
     );
 
     const titles = await this.page.$$eval(TITLE_SELECTOR, (elements) =>

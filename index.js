@@ -25,6 +25,7 @@ const logger = Log4js.getLogger('index');
 const run = async () => {
   const browser = await puppeteer.launch({
     headless: true,
+    // dumpio: true,
   });
 
   logger.info(`Extraction initialized by ${process.env.EVENT_NAME}.`);

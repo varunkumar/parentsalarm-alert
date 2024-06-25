@@ -1,22 +1,8 @@
 import { BASE_URL, SCREENSHOT_PATH } from '../utils.js';
 import { BaseExtractor } from './base-extractor.js';
 
-const START_DATE_SELECTOR = '#valSentSmsDetails_StartDate';
-const SUBMIT_SELECTOR = '#btnGetData';
-const DATA_SELECTOR = '.fc-table tbody tr';
+const DATA_SELECTOR = '.an-con';
 
-const PERIOD_RANGE = 30;
-
-// Get start date in mm/dd/yyyy format
-const getStartDate = () => {
-  const date = new Date();
-  date.setDate(date.getDate() - PERIOD_RANGE);
-  return date.toLocaleDateString('en-US', {
-    month: '2-digit',
-    day: '2-digit',
-    year: 'numeric',
-  });
-};
 class SMSExtractor extends BaseExtractor {
   async extractAll() {
     await this.page.goto(`${BASE_URL}/User/Student/ReceivedSms`, {
@@ -25,29 +11,27 @@ class SMSExtractor extends BaseExtractor {
     });
     await this.page.screenshot({ path: `${SCREENSHOT_PATH}/sms.png` });
 
-    await Promise.all([
-      this.page.$eval(
-        START_DATE_SELECTOR,
-        (e, startDate) => {
-          e.setAttribute('value', startDate);
-        },
-        getStartDate()
-      ),
-      this.page.click(SUBMIT_SELECTOR),
-      this.page.waitForNavigation({
-        waitUntil: 'networkidle2',
-        timeout: 60000,
-      }),
-    ]);
-
     await this.page.screenshot({
       path: `${SCREENSHOT_PATH}/sms-submitted.png`,
     });
 
     let posts = await this.page.$$eval(DATA_SELECTOR, (elements) =>
       elements.map((e) => {
-        const title = e.querySelectorAll('td')[1].textContent;
-        const date = e.querySelectorAll('td')[2].textContent;
+        let title = e.textContent;
+        title = title.replace(/\s+/g, ' ').trim();
+        title = title.replace(/\n/g, ' ').trim();
+
+        // Sample date "\n                             Sent by : Greenfield Chennai International School on 25/06/2024 at 10:10 AM\n                        '"
+        // Get the next sibling of the title element
+        let date = e.nextElementSibling?.textContent?.trim() || '';
+        date = date.split(' on ')[1]; // eslint-disable-line
+        date = date.replace(' at ', ' ');
+        date = new Date(
+          date.replace(
+            /(\d{2})\/(\d{2})\/(\d{4}) (\d+:\d+ [AP]M)/,
+            '$2/$1/$3 $4'
+          )
+        ).toISOString();
         return { title, date };
       })
     );
@@ -60,4 +44,5 @@ class SMSExtractor extends BaseExtractor {
   }
 }
 
-export { SMSExtractor, getStartDate };
+// eslint-disable-next-line import/prefer-default-export
+export { SMSExtractor };

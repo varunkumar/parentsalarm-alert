@@ -31,8 +31,10 @@ const run = async () => {
     );
 
     await Promise.all(
-      extractors.map((extractor) =>
-        extractor.updateWatermark(new Date('2024-06-24T00:00:00.000Z'))
+      extractors.map(
+        (extractor) =>
+          extractor.updateWatermark(new Date('2024-06-24T00:00:00.000Z'))
+        // extractor.resetWatermark()
       )
     );
 

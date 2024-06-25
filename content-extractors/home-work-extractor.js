@@ -1,10 +1,9 @@
 import { BASE_URL, SCREENSHOT_PATH } from '../utils.js';
-import { DateBasedExtractor } from './date-based-extractor.js';
+import { BaseExtractor } from './base-extractor.js';
 
-const DATE_SELECTOR = '.table-row:not([title])';
-const TITLE_SELECTOR = '.table-row[title]';
+const TITLE_SELECTOR = '.an-title';
 
-class HomeWorkExtractor extends DateBasedExtractor {
+class HomeWorkExtractor extends BaseExtractor {
   async extractAll() {
     await this.page.goto(`${BASE_URL}/User/Student/HomeWork`, {
       waitUntil: 'domcontentloaded',
@@ -12,27 +11,34 @@ class HomeWorkExtractor extends DateBasedExtractor {
     });
     await this.page.screenshot({ path: `${SCREENSHOT_PATH}/homework.png` });
 
-    const dates = await this.page.$$eval(DATE_SELECTOR, (elements) =>
-      elements.map((e) => e.textContent).filter((e) => e.trim().length > 0)
-    );
-
-    const titles = await this.page.$$eval(TITLE_SELECTOR, (elements) =>
-      elements.map((element) => element.textContent)
-    );
-
-    // Concat items from date and title at the same index
-    const posts = dates.map((dateStr, index) => {
-      let date = dateStr.trim().split('/').reverse().join('/');
-
-      date = new Date(date);
-      const title = titles.at(index).replace(/\s+/g, ' ').trim();
-
-      return {
-        date,
-        title,
+    const posts = await this.page.$$eval(TITLE_SELECTOR, (elements) => {
+      const isContentElement = (el) => {
+        if (el?.hasAttribute('class')) {
+          const cls = el?.getAttribute('class');
+          return cls.indexOf('an-con') !== -1;
+        }
+        return false;
       };
+      return elements.map((element) => {
+        const date = element.innerText;
+        let nextElement = element.nextElementSibling;
+        let content = '';
+        while (isContentElement(nextElement)) {
+          content += '\n' + nextElement?.innerText; // eslint-disable-line
+          nextElement = nextElement.nextElementSibling;
+        }
+
+        return {
+          date: date.replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$2/$1/$3'),
+          title: content,
+        };
+      });
     });
 
+    // eslint-disable-next-line no-restricted-syntax
+    for (const post of posts) {
+      post.date = new Date(post.date);
+    }
     return posts;
   }
 }

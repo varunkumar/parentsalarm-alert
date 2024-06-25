@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import puppeteer from 'puppeteer';
 import { EContentExtractor } from './content-extractors/e-content-extractor.js';
 import { HomeWorkExtractor } from './content-extractors/home-work-extractor.js';
@@ -9,24 +10,40 @@ const run = async () => {
   const browser = await puppeteer.launch({
     headless: true,
   });
-  const page = await login(browser);
 
-  const extractors = [
-    await new EContentExtractor(browser),
-    await new HomeWorkExtractor(browser),
-    await new NoticeBoardExtractor(browser),
-    await new SMSExtractor(browser),
-  ];
+  const accounts = process.env.ACCOUNTS.split(',');
+  // eslint-disable-next-line no-restricted-syntax
+  for (const account of accounts) {
+    const page = await login(
+      browser,
+      process.env[`${account}_USER_NAME`],
+      process.env[`${account}_PASSWORD`]
+    );
 
-  await Promise.all(
-    extractors.map((extractor) =>
-      extractor.updateWatermark(new Date('2021-09-01T00:00:00.000Z'))
-    )
-  );
+    const extractors = [
+      new EContentExtractor(),
+      new HomeWorkExtractor(),
+      new NoticeBoardExtractor(),
+      new SMSExtractor(),
+    ];
+    await Promise.all(
+      extractors.map((extractor) => extractor.init(browser, account))
+    );
 
-  await sleep(1000);
+    await Promise.all(
+      extractors.map((extractor) =>
+        extractor.updateWatermark(new Date('2024-06-24T00:00:00.000Z'))
+      )
+    );
 
-  await logout(page);
+    const watermarks = await Promise.all(
+      extractors.map((extractor) => extractor.getWatermark())
+    );
+    console.log(watermarks.join('\n'));
+    await sleep(1000);
+
+    await logout(page);
+  }
   browser.close();
 };
 

@@ -25,7 +25,8 @@ class NoticeBoardExtractor extends BaseExtractor {
       let date = dateStr
         .replace(/\s+/g, ' ')
         .trim()
-        .replace('Posted On : ', '');
+        .replace('Posted On : ', '')
+        .replace(/(\d{2})\/(\d{2})\/(\d{4})(.*)/, '$2/$1/$3$4');
 
       date = new Date(date);
 

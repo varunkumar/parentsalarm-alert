@@ -7,6 +7,9 @@ import { NoticeBoardExtractor } from './content-extractors/notice-board-extracto
 import { SMSExtractor } from './content-extractors/sms-extractor.js';
 import { login, logout, sleep } from './utils.js';
 
+// eslint-disable-next-line no-unused-vars
+const skipSlack = process.env.SKIP_SLACK === 'true' || false;
+
 Log4js.configure({
   appenders: {
     out: { type: 'stdout' },

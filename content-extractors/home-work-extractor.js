@@ -23,14 +23,25 @@ class HomeWorkExtractor extends BaseExtractor {
         const date = element.innerText;
         let nextElement = element.nextElementSibling;
         let content = '';
+        const attachments = [];
         while (isContentElement(nextElement)) {
-          content += '\n' + nextElement?.innerText; // eslint-disable-line
+          if (nextElement?.querySelector('a')) {
+            const anchor = nextElement.querySelector('a');
+            attachments.push({
+              name: anchor.innerText,
+              url: anchor.href,
+            });
+          }
+          const subject = nextElement?.innerText;
+          content = `${content}\n${subject}\n`;
           nextElement = nextElement.nextElementSibling;
         }
 
         return {
           date: date.replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$2/$1/$3'),
-          title: content,
+          title: `Home Work - ${date}`,
+          content: content.trim(),
+          attachments,
         };
       });
     });
@@ -38,6 +49,16 @@ class HomeWorkExtractor extends BaseExtractor {
     // eslint-disable-next-line no-restricted-syntax
     for (const post of posts) {
       post.date = new Date(post.date);
+      // Name attachments based on the type of attachment
+      const attachments = post.attachments.map(
+        (attachment, attachmentIndex) => {
+          let { name } = attachment;
+          const { url } = attachment;
+          name = name || this.assignIconBasedOnUrl(attachmentIndex + 1, url);
+          return { name, url };
+        }
+      );
+      post.attachments = attachments;
     }
     return posts;
   }

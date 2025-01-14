@@ -18,12 +18,26 @@ const formatPosts = (watermarkKey, posts) => {
   if (!posts || posts.length === 0) {
     return `${header} There are no new posts.\n`;
   }
-  const formattedPosts = posts.map(
-    (post) =>
-      `        [<!date^${Math.floor(post.date / 1000)}^{date_short_pretty}|${
-        post.date
-      }>] *${post.title}*`
-  );
+  const formattedPosts = posts.map((post) => {
+    const attachmentText = post.attachments
+      ? post.attachments
+          .map((attachment) => `<${attachment.url}|${attachment.name}>`)
+          .join(', ')
+      : '';
+    // Format the post content as Slack code block with a cap of 4000 characters
+    let content = post.content;
+    if (content.length > 4000) {
+      content = content.substring(0, 3900) + '...';
+    }
+    let contentBlock = `\`\`\`${content}\`\`\`\n`;
+    if (content.length === 0) {
+      contentBlock = '';
+    }
+
+    return `[<!date^${Math.floor(post.date / 1000)}^{date_short_pretty}|${
+      post.date
+    }>] *${post.title}*${contentBlock} ${attachmentText}`;
+  });
   let messageCount = '';
   if (formattedPosts.length > 1) {
     messageCount = `There are *${formattedPosts.length}* new posts.`;
@@ -179,6 +193,22 @@ class BaseExtractor {
       return posts[0].date.toJSON();
     }
     return currentWatermark;
+  }
+
+  assignIconBasedOnUrl(index, url) {
+    if (url.includes('.pdf')) {
+      return `:pdf: PDF-${index}`;
+    }
+    if (url.includes('.jpg') || url.includes('.jpeg') || url.includes('.png')) {
+      return `:image: Image-${index}`;
+    }
+    if (url.includes('.mp4') || url.includes('.mov')) {
+      return `:video: Video-${index}`;
+    }
+    if (url.includes('.doc') || url.includes('.docx')) {
+      return `:word: Doc-${index}`;
+    }
+    return `:link1: Link-${index}`;
   }
 }
 

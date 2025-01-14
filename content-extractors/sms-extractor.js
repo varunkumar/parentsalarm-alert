@@ -39,6 +39,8 @@ class SMSExtractor extends BaseExtractor {
     posts = posts.map((post) => ({
       title: post.title,
       date: new Date(post.date),
+      content: '',
+      attachments: [],
     }));
     return posts;
   }

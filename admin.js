@@ -20,13 +20,13 @@ const run = async () => {
       process.env[`${account}_PASSWORD`]
     );
 
-    let extractors = [
+    const extractors = [
       new EContentExtractor(),
       new HomeWorkExtractor(),
       new NoticeBoardExtractor(),
       new SMSExtractor(),
     ];
-    extractors = [extractors[2]];
+    // extractors = [extractors[2]];
     await Promise.all(
       extractors.map((extractor) => extractor.init(browser, account))
     );
@@ -34,7 +34,7 @@ const run = async () => {
     await Promise.all(
       extractors.map(
         (extractor) =>
-          extractor.updateWatermark(new Date('2025-01-08T00:00:00.000Z'))
+          extractor.updateWatermark(new Date('2025-01-01T00:00:00.000Z'))
         // extractor.resetWatermark()
       )
     );

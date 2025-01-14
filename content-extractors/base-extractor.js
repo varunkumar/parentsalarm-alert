@@ -25,9 +25,9 @@ const formatPosts = (watermarkKey, posts) => {
           .join(', ')
       : '';
     // Format the post content as Slack code block with a cap of 4000 characters
-    let content = post.content;
+    let { content } = post;
     if (content.length > 4000) {
-      content = content.substring(0, 3900) + '...';
+      content = `${content.substring(0, 3900)}...`;
     }
     let contentBlock = `\`\`\`${content}\`\`\`\n`;
     if (content.length === 0) {
@@ -187,15 +187,14 @@ class BaseExtractor {
   }
 
   // Get watermark from posts
-  // eslint-disable-next-line class-methods-use-this
-  getWatermarkFromPosts(posts, currentWatermark) {
+  static getWatermarkFromPosts(posts, currentWatermark) {
     if (posts && posts.length > 0) {
       return posts[0].date.toJSON();
     }
     return currentWatermark;
   }
 
-  assignIconBasedOnUrl(index, url) {
+  static assignIconBasedOnUrl(index, url) {
     if (url.includes('.pdf')) {
       return `:pdf: PDF-${index}`;
     }

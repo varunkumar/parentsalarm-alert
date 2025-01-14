@@ -54,7 +54,9 @@ class HomeWorkExtractor extends BaseExtractor {
         (attachment, attachmentIndex) => {
           let { name } = attachment;
           const { url } = attachment;
-          name = name || this.assignIconBasedOnUrl(attachmentIndex + 1, url);
+          name =
+            name ||
+            BaseExtractor.assignIconBasedOnUrl(attachmentIndex + 1, url);
           return { name, url };
         }
       );

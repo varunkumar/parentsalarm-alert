@@ -74,7 +74,9 @@ class EContentExtractor extends DateBasedExtractor {
         .map((attachment, attachmentIndex) => {
           let { name } = attachment;
           const { url } = attachment;
-          name = name || this.assignIconBasedOnUrl(attachmentIndex + 1, url);
+          name =
+            name ||
+            EContentExtractor.assignIconBasedOnUrl(attachmentIndex + 1, url);
           return { name, url };
         });
 

@@ -46,7 +46,8 @@ class DateBasedExtractor extends BaseExtractor {
   }
 
   // Get watermark from posts
-  static getWatermarkFromPosts(posts, currentWatermark) {
+  // eslint-disable-next-line class-methods-use-this
+  getWatermarkFromPosts(posts, currentWatermark) {
     const watermark = decodeWatermark(currentWatermark);
     if (posts && posts.length > 0) {
       let latestDate = watermark.date;

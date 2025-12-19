@@ -120,3 +120,4 @@ dist
 
 screenshot/
 .DS_Store
+.watermarks/

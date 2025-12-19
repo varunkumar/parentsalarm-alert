@@ -34,7 +34,6 @@ jobs:
             EVENT_NAME="${{ github.event_name }}"
             AGANVEE_USER_NAME="${{ secrets.AGANVEE_USER_NAME }}"
             AGANVEE_PASSWORD="${{ secrets.AGANVEE_PASSWORD }}"
-            AGANVEE_PERSISTENT_VALUE_ACCESS_TOKEN="${{ secrets.AGANVEE_PERSISTENT_VALUE_ACCESS_TOKEN }}"
             AGANVEE_CHANNEL="${{ secrets.AGANVEE_CHANNEL }}"
             AGANVEE_DM_CHANNEL="${{ secrets.AGANVEE_DM_CHANNEL }}"
       - name: Use Node.js ${{ matrix.node-version }}
@@ -65,6 +64,13 @@ jobs:
           key: puppeteer-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-v2
           restore-keys: |
             puppeteer-${{ runner.os }}-v2
+      - name: Cache Watermarks
+        uses: actions/cache@v3
+        with:
+          path: .watermarks
+          key: watermarks-AGANVEE-${{ github.run_id }}
+          restore-keys: |
+            watermarks-AGANVEE-
       - run: npm install
       - run: npm test
       - run: npm run build --if-present

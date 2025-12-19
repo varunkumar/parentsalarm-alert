@@ -1,6 +1,14 @@
 import { BaseExtractor } from './base-extractor.js';
 
 const decodeWatermark = (watermarkStr) => {
+  // Handle undefined or empty watermark (first run)
+  if (!watermarkStr) {
+    return {
+      date: new Date(NaN), // Invalid date
+      posts: {},
+    };
+  }
+
   let watermark = '';
   try {
     watermark = JSON.parse(watermarkStr.replace(/'/g, '"').replace(/`/g, "'"));

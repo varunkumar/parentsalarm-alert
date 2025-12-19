@@ -1,6 +1,9 @@
 import Log4js from 'log4js';
-import fetch from 'node-fetch';
 import { sendMessage } from '../slack.js';
+import {
+  getWatermark as getWatermarkFromStorage,
+  setWatermark as setWatermarkToStorage,
+} from '../watermark-storage.js';
 
 const instances = {};
 const ICON_MAP = {
@@ -96,62 +99,21 @@ class BaseExtractor {
 
   // Get current watermark.
   async getWatermark() {
-    const response = await fetch(
-      `https://persistent.aaim.io/api/values/get?key=${this.watermarkKey}`,
-      {
-        method: 'GET',
-        headers: {
-          'x-api-key':
-            process.env[`${this.account}_PERSISTENT_VALUE_ACCESS_TOKEN`] || '',
-        },
-      }
-    );
-    if (response.status !== 200) {
-      return undefined;
-      // throw new Error(`[${this.watermarkKey}] Failed to get watermark.`);
-    }
-    const watermark = await response.json();
-    return watermark.data;
+    return getWatermarkFromStorage(this.watermarkKey, this.account);
   }
 
   // Update watermark
   async updateWatermark(watermark) {
-    const response = await fetch(
-      `https://persistent.aaim.io/api/values/set?key=${this.watermarkKey}`,
-      {
-        method: 'POST',
-        headers: {
-          'x-api-key':
-            process.env[`${this.account}_PERSISTENT_VALUE_ACCESS_TOKEN`] || '',
-          'Content-Type': 'application/json',
-        },
-        body: `{"value":"${watermark}"}`,
-      }
-    );
-    if (response.status !== 200) {
-      throw new Error(`[${this.watermarkKey}] Failed to update watermark.`);
-    }
+    await setWatermarkToStorage(this.watermarkKey, this.account, watermark);
   }
 
   // Reset watermark
   async resetWatermark() {
-    const response = await fetch(
-      `https://persistent.aaim.io/api/values/set?key=${this.watermarkKey}`,
-      {
-        method: 'POST',
-        headers: {
-          'x-api-key':
-            process.env[`${this.account}_PERSISTENT_VALUE_ACCESS_TOKEN`] || '',
-          'Content-Type': 'application/json',
-        },
-        body: `{"value":"2015-11-07T08:48:00.000Z"}`,
-      }
+    await setWatermarkToStorage(
+      this.watermarkKey,
+      this.account,
+      '2015-11-07T08:48:00.000Z'
     );
-    if (response.status !== 200) {
-      throw new Error(
-        `[${this.watermarkKey}] Failed to reset watermark. ${response.statusText}`
-      );
-    }
   }
 
   // Filter posts after the watermark
@@ -179,8 +141,22 @@ class BaseExtractor {
       if (this.watermarkKey === 'SMSExtractor') {
         channel = process.env[`${this.account}_DM_CHANNEL`];
       }
-      await sendMessage(formatPosts(this.watermarkKey, posts), channel);
-      this.logger.info(`Published ${posts.length} items.`);
+
+      // Cap posts to prevent flooding Slack (e.g., when watermark is missing)
+      const MAX_POSTS = 10;
+      const postsToPublish = posts.slice(0, MAX_POSTS);
+
+      if (posts.length > MAX_POSTS) {
+        this.logger.warn(
+          `Found ${posts.length} new items, but limiting to ${MAX_POSTS} to prevent Slack flooding.`
+        );
+      }
+
+      await sendMessage(
+        formatPosts(this.watermarkKey, postsToPublish),
+        channel
+      );
+      this.logger.info(`Published ${postsToPublish.length} items.`);
     } else {
       this.logger.info(`No new items to publish.`);
     }

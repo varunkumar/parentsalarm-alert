@@ -9,7 +9,7 @@ This is a **web scraping automation** that monitors a school's ParentsAlarm port
 ### Multi-Account System
 
 - Configured via `ACCOUNTS=AX,AY` environment variable (comma-separated account prefixes)
-- Each account requires its own credentials: `{ACCOUNT}_USER_NAME`, `{ACCOUNT}_PASSWORD`, `{ACCOUNT}_PERSISTENT_VALUE_ACCESS_TOKEN`
+- Each account requires its own credentials: `{ACCOUNT}_USER_NAME`, `{ACCOUNT}_PASSWORD`
 - Each account has dedicated Slack channels: `{ACCOUNT}_CHANNEL` for general posts, `{ACCOUNT}_DM_CHANNEL` for SMS
 - Runs sequentially through accounts (not parallel) due to browser login requirements
 
@@ -17,11 +17,11 @@ This is a **web scraping automation** that monitors a school's ParentsAlarm port
 
 All content extractors inherit from [BaseExtractor](../content-extractors/base-extractor.js):
 
-1. **BaseExtractor** - Foundation class with watermark management via persistent.aaim.io API
+1. **BaseExtractor** - Foundation class with watermark management via local filesystem
 
    - `extractNew()` - Main workflow: extract → filter → publish → update watermark
    - `extractAll()` - Must be implemented by subclasses to scrape specific content
-   - `getWatermark()` / `updateWatermark()` - Persistent storage for tracking seen posts
+   - `getWatermark()` / `updateWatermark()` - File-based storage for tracking seen posts
    - `publishPosts()` - Sends formatted messages to Slack with account-specific channels
 
 2. **DateBasedExtractor** extends BaseExtractor - For content with only date (no time)
@@ -42,8 +42,9 @@ All content extractors inherit from [BaseExtractor](../content-extractors/base-e
 
 ### Persistent State Management
 
-- Uses external service `persistent.aaim.io` for watermark storage (NOT local files)
-- Each account has separate API tokens (`{ACCOUNT}_PERSISTENT_VALUE_ACCESS_TOKEN`)
+- Uses local filesystem (`.watermarks/` directory) for watermark storage
+- In GitHub Actions, cached via `actions/cache@v3` for persistence across runs
+- Each account has separate watermark files per extractor
 - **Watermark formats**:
   - **BaseExtractor**: ISO date string - `"2025-12-15T10:30:00.000Z"`
   - **DateBasedExtractor**: Encoded JSON - `{date: '2025-12-15T00:00:00.000Z', posts: {'Math Homework': 1, 'Science Test': 1}}`
@@ -81,7 +82,6 @@ CHANNEL=#default (fallback channel)
 
 AX_USER_NAME=student@example.com
 AX_PASSWORD=***
-AX_PERSISTENT_VALUE_ACCESS_TOKEN=***
 AX_CHANNEL=C*** (main posts)
 AX_DM_CHANNEL=D*** (SMS posts)
 ```
@@ -150,14 +150,8 @@ All extractors save screenshots to `./screenshot/` at key steps (login, form sub
   2. Verify post dates are newer than watermark
   3. For DateBasedExtractor: check if post title is in watermark.posts object
   4. Review screenshots to confirm content exists on page
+  5. Check `.watermarks/` directory for watermark files
 - **Fix**: Reset watermark to earlier date if content was missed
-
-### Duplicate Notifications
-
-- **Symptoms**: Same post sent to Slack multiple times
-- **Causes**: Watermark not updating, extractor filterPosts() logic error
-- **Debug**: Check persistent.aaim.io API responses in logs
-- **Fix**: Ensure watermark API key is valid, check network connectivity
 
 ### Scraping Errors (DOM Changes)
 
@@ -197,5 +191,4 @@ All extractors save screenshots to `./screenshot/` at key steps (login, form sub
 
 - **Puppeteer** - Headless Chrome automation (student.schoolcanvas.com portal)
 - **@slack/web-api** - Slack Bot API client
-- **persistent.aaim.io** - Third-party watermark persistence (API key authenticated)
 - **log4js** with @log4js-node/slack - Structured logging to console + Slack logs channel
